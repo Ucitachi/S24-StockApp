@@ -42,12 +42,12 @@ const menuData: Menu[] = [
         path: "/contact",
         newTab: false,
       },
-      // {
-      //   id: 43,
-      //   title: "Blog Grid Page",
-      //   path: "/blog",
-      //   newTab: false,
-      // },
+      {
+        id: 43,
+        title: "Sell Stock",
+        path: "/Sell",
+        newTab: false,
+      },
       // {
       //   id: 44,
       //   title: "Blog Sidebar Page",

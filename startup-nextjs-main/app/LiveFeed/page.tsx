@@ -1,4 +1,4 @@
-"use client"; // Ensure this is a Server Component
+"use client";
 import { useState, useEffect } from 'react';
 import { navigate } from './page-server'; 
 
@@ -54,15 +54,7 @@ function LiveFeed() {
 
     const handleBuyStock = async (index: string) => {
         navigate(index);
-      // ... (optionally handle any necessary logic before redirect) ...
-    //   console.log("sd")
-    //   await fetch('/LiveFeed', {
-    //       method: 'GET', // Or another method if appropriate
-    //       headers: {
-    //           'index': index 
-    //       }
-    //   });
-      // No need to return redirect here since it's handled by the server
+    
   };
 
     if (!Object.keys(data).length) {
@@ -84,7 +76,7 @@ function LiveFeed() {
                         <tr key={index}>
                             <td style={{ border: '1px solid white' }}>{index}</td>
                             <td style={{ border: '1px solid white' }}>{value}</td>
-                            <td style = {{ border: '1px solid white' }}>
+                            <td style = {{ border: '1px solid white ', color: 'white' }}>
                                 <button onClick={() => handleBuyStock(index)}>Buy Stock</button>
                             </td>
                         </tr>

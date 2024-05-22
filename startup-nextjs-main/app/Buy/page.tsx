@@ -1,9 +1,10 @@
-'use client';
+'use client';useRouter
 import { useState } from 'react';
 import { useTheme } from "next-themes";
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useSearchParams,useRouter } from 'next/navigation';
+
 
 
 function Buy() {

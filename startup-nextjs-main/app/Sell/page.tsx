@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams,useRouter } from 'next/navigation';
 import { useTheme } from "next-themes";
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -11,13 +11,15 @@ function Sell() {
     // const index  = router.query;
     // console.log('Received index:', index); 
     const { theme } = useTheme();
-    const [stockName, setStockName] = useState('');
     const [quantity, setQuantity] = useState(0);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
+    const searchParams=useSearchParams();
+    const [stockName, setStockName] = useState(searchParams.get("stock"));
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+     
+        // e.preventDefault();
         try {
             const token = Cookies.get('token');
             const response = await axios.post('http://localhost:5000/api/buy-stock', {
@@ -66,8 +68,6 @@ function Sell() {
       </p>
       <div>
         <input
-          type="text"
-          name="Stock"
           placeholder="Enter Stock Name"
           value={stockName} 
           onChange={(e) => setStockName(e.target.value)}

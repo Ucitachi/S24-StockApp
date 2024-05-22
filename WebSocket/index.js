@@ -267,7 +267,7 @@ const decodeProfobuf = (buffer) => {
   try {
     await initProtobuf(); // Initialize protobuf
     const wsUrl = await getMarketFeedUrl(); // Get the market feed URL
-    console.log(wsUrl);//websock url
+    // console.log(wsUrl);//websock url
     const ws = await connectWebSocket(wsUrl); // Connect to the WebSocket
   } catch (error) {
     console.error("An error occurred:", error);
@@ -290,10 +290,10 @@ const wss = new WebSocket2.Server({ port: 3002 });
 
 wss.on('connection', 
 function connection(wss) {
-  console.log('Client connected');
+  // console.log('Client connected');
   wss.send(JSON.stringify(ltpValues));
   wss.on('message', function incoming(message) {
-    console.log('Received message:', message);
+    // console.log('Received message:', message);
   });
 
   wss.on('close', function() {

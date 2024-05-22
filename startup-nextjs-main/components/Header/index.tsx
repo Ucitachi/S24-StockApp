@@ -10,10 +10,12 @@ import axios from "axios";
 import useTokenContext from "@/app/TokenContext";
 
 const Header = () => {
-  const {token,setToken}=useTokenContext();
+  // const {token,setToken}=useTokenContext();
+  const router = useRouter();
   const [menuDatas,setMenuDatas]=useState([]);
   const [loading,setLoading] =  useState<boolean | null>(true);
-
+  const token = Cookies.get('token');
+  console.log("toKen:" ,token)
   // const fetchInitialData = async () => {
   //   try {
   //     setLoading(true);
@@ -41,9 +43,9 @@ const Header = () => {
       // Implement secure logout logic on both client and server sides
       const logoutResponse = await axios.post('http://localhost:5000/logout');
       if (logoutResponse.status === 200) {
-        setToken(null);
+        // setToken(null);
         Cookies.remove('token'); // Clear cookie securely
-        window.location="/" // Redirect to appropriate page
+        router.push("/") // Redirect to appropriate page
       } else {
         console.error("Logout failed:", logoutResponse.statusText);
         // Handle logout failure gracefully, e.g., display error message
@@ -102,7 +104,7 @@ const Header = () => {
       >
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-60 max-w-full px-4 xl:mr-12">
+            <div className="w-20 max-w-full px-4 xl:mr-12">
               {/*Home page is rendered here*/}
               <Link
                 href="/"
@@ -118,10 +120,10 @@ const Header = () => {
                   className="w-full dark:hidden"
                 />
                 <Image
-                  src="/images/logo/logo.svg"
+                  src="/images/logo/logo.png"
                   alt="logo"
-                  width={140}
-                  height={30}
+                  width={80}
+                  height={10}
                   className="hidden w-full dark:block"
                 />
               </Link>

@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const Sign = require('./Models/RegistrationSchema');
 const crypto = require('crypto');
-const secretKey = crypto.randomBytes(64).toString('hex');
+// const secretKey = crypto.randomBytes(64).toString('hex');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // For secure password hashing
 const axios=require("axios");
@@ -72,7 +72,7 @@ app.post('/register', async (req, res) => {
   app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-          console.log(email,password)
+        console.log(process.env.secretKey);
         // 1. Find the user by email
         const user = await Sign.findOne({ email });
 
@@ -85,8 +85,7 @@ app.post('/register', async (req, res) => {
 
         if (passwordMatch) {
             // 3. Generate a JWT token
-            // console.log(secretKey);
-            const token = jwt.sign({ id: user.id, username: user.username }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ id: user.id, username: user.username }, process.env.secretKey, { expiresIn: '1h' });
 
             // 4. Set the token as a secure cookie
             // console.log("TOKEN ",token)
@@ -114,7 +113,7 @@ app.post('/register', async (req, res) => {
   // Logout endpoint
 app.post('/logout', (req, res) => {
     try {
-        res.clearCookie('authToken'); // Clear the authToken cookie
+        res.clearCookie('token'); // Clear the authToken cookie
         res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
         console.error(error);
@@ -130,7 +129,7 @@ function authenticateToken(req, res, next) {
   }
 
   try {
-    const payload = jwt.verify(token, secretKey);
+    const payload = jwt.verify(token, process.env.secretKey);
     // Attach user details to the request object
     req.user = payload;
     next(); // Proceed to the next middleware or route handler
@@ -167,6 +166,8 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
   try {
     const userdata = await Sign.findById(user.id);
     const stockData = userdata.equity.map(stock => [stock.stock_name, stock.purchased_value]);
+    const username =  userdata.email;
+    const balance = userdata.virtualMoney;
     // 2. Extract stock names
     if(stockData != []){
     const stockNames = stockData.map(stock => stock[0]); 
@@ -182,11 +183,12 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
       response.push({
         stockName,
         purchasedValue,
-        currentPrice
+        currentPrice,
       });
     }
+    response.push({ username, balance });
 
-    console.log(response);
+    // console.log(response);
     res.status(200).json(response);
   }
   else{
@@ -202,9 +204,9 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
   async function buySellStock(userDetails, stock_name, quantity, isBuy) {
     try {
       const user = await Sign.findById(userDetails.id);
-     console.log(user);
+    //  console.log(user);
       const stock = await fetchStockPrice([stock_name]); // Call your data fetching function
-      console.log(stock);
+      // console.log(stock);
       const currentPrice = stock[stock_name];
       let totalCost = 0;
       if (isBuy) {
@@ -215,7 +217,7 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
           throw new Error('Insufficient virtual money');
         }
         user.virtualMoney -= totalCost;
-        console.log("USER",currentPrice)
+        // console.log("USER",currentPrice)
         const existingHolding = user.equity?.find(holding => holding.stock_name===stock_name);
         if (existingHolding) {
           existingHolding.quantity += quantity;
@@ -229,7 +231,7 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
         }
       } 
       else { // Selling
-        console.log("Selling");
+        console.log("Selling",stock_name);
         const existingHolding = user.equity.find(holding => holding.stock_name===stock_name);
         console.log("user:",existingHolding);
         
@@ -239,7 +241,7 @@ app.post('/api/get-stock-values',authenticateToken, async (req, res) => {
         existingHolding.quantity -= quantity;
         totalCost = currentPrice * quantity;
         user.virtualMoney += totalCost;
-        console.log("EXISTING ",existingHolding.quantity)
+        // console.log("EXISTING ",existingHolding.quantity)
         if (existingHolding.quantity == 0) {
 
           user.equity = user.equity.filter(holding => holding.stock_name!==stock_name);
