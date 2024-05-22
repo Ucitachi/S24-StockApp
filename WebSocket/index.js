@@ -1,19 +1,22 @@
 //IMPORTANT URL
 //https://upstox.com/developer/api-documentation/example-code/login/get-token
 
+//Import required Libraries
 const express = require('express');
 const axios = require('axios');
 var UpstoxClient = require("upstox-js-sdk");
 const WebSocket = require("ws").WebSocket;
 const protobuf = require("protobufjs");
 const cors = require('cors');
+const dotenv = require('dotenv');
 
+//Create an express object (express application)
 const app = express();
 const PORT = 3000;
+dotenv.config()
 
-// Replace these with your actual Upstox API key and redirect URI
-const apiKey = 'd922ff62-5b44-484d-9635-6240665d3133';
-const secretKey = '180zxpj9jz';
+const apiKey = process.env.API_KEY;
+const secretKey = process.env.SECRET_KEY;
 const redirectUri = 'http://localhost:3000/callback';
 let protobufRoot = null;
 let defaultClient = UpstoxClient.ApiClient.instance;
@@ -28,11 +31,10 @@ const ltpValues = {};
 const upstoxAuthorizationUrl = 'https://api.upstox.com/v2/login/authorization/dialog';
 const url1 = "https://api.upstox.com/v2/login/authorization/token"
 
-
+//Middle-ware checking for right host and parssing data into json object
 app.use(cors({
   origin:'http://localhost:3000'
 }));
-
 app.use(express.json());
 
 // Redirect user to Upstox authorization page
@@ -53,6 +55,7 @@ app.get('/callback', (req, res) => {
 
   // Extract authorization code from the callback URL
   const authorizationCode = req.query.code;
+  console.log(authorizationCode);
 
 const headers = {
   'accept': 'application/json',
